@@ -1,0 +1,55 @@
+# version: '3.8'
+
+services:
+  # 1. MariaDB 컨테이너
+  db:
+    image: mariadb:10.11
+    container_name: node_mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # 2. 백엔드 (Express) 컨테이너
+  backend:
+    build:
+      context: ./backend
+    container_name: node_backend
+    environment:
+      - DB_HOST=db
+      - DB_USER=my_user
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=my_database
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app           # 로컬 코드를 컨테이너의 /app에 동기화
+      - /app/node_modules        # 컨테이너 내부의 패키지 폴더는 덮어쓰지 않도록 보호
+    command: npm run dev         # 코드 변경 감지를 위한 개발 모드 실행
+    depends_on:
+      - db
+
+  # 3. 프론트엔드 (React) 컨테이너
+  frontend:
+    build:
+      context: ./frontend
+    container_name: node_frontend
+    environment:
+      - CHOKIDAR_USEPOLLING=true # 파일 변경 감지 최적화
+    ports:
+      - "5173:5173"              # Vite 기본 포트
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      - backend
+
+volumes:
+  db_data: # DB 데이터 영구 보존용
