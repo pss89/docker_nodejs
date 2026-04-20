@@ -8,8 +8,8 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: my_database
-      MYSQL_USER: my_user
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3306:3306"
@@ -22,10 +22,10 @@ services:
       context: ./backend
     container_name: node_backend
     environment:
-      - DB_HOST=db
-      - DB_USER=my_user
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=my_database
+      - DB_NAME=${DB_NAME}
     ports:
       - "5000:5000"
     volumes:
