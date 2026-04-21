@@ -18,6 +18,9 @@
 const express = require('express');
 const cors = require('cors');
 
+// 1. passport 설정 파일 불러오기
+require('./config/passport');
+
 const app = express();
 const port = 5000;
 
