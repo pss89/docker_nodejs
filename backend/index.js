@@ -14,6 +14,8 @@
 //     console.log(`백엔드 서버가 http://localhost:${port} 에서 실행 중입니다.`);
 // });
 
+require('dotenv').config(); // .env 파일에서 환경변수 로드
+
 // backend/index.js
 const express = require('express');
 const cors = require('cors');

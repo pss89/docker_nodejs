@@ -29,8 +29,6 @@ router.get('/naver/callback', passport.authenticate('naver', { session: false, f
     handleSocialCallback(req, res);
 });
 
-const JWT_SECRET_KEY = process.env.JWT_SECRET || 'v9M54Cnsg708AhEZogVxRR4HCYBHQjZyqAFKUOnPF1A=';
-
 // ==========================================
 // 공통 콜백 처리 함수 (프론트엔드로 화면 전환)
 // ==========================================
@@ -42,13 +40,13 @@ function handleSocialCallback(req, res) {
         // [수정된 부분] 신규 회원: 식별자 정보를 담은 '15분짜리 임시 토큰' 발행
         const registerToken = jwt.sign(
             { provider: user.provider, providerId: user.providerId },
-            JWT_SECRET_KEY,
+            process.env.JWT_SECRET,
             { expiresIn: '15m' } // 15분 내에 가입을 완료해야 함
         );
         res.redirect(`http://localhost:5173/register?token=${registerToken}`);
     } else {
         // 기존 회원: 메인 화면용 2시간짜리 정식 로그인 토큰 발행
-        const loginToken = jwt.sign({ userId: user.userId }, JWT_SECRET_KEY, { expiresIn: '2h' });
+        const loginToken = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '2h' });
         res.redirect(`http://localhost:5173/?token=${loginToken}`);
     }
 }

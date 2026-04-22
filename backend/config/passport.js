@@ -5,6 +5,11 @@ const pool = require('./db');
 
 // 공통 처리 로직: DB를 조회하여 신규/기존 유저 판별
 const verifySocialUser = async (provider, profile, done) => {
+    // docker compose logs backend 명령어로 확인 가능
+    // console.log(`\n=== 🚀 [${provider.toUpperCase()}] 에서 넘어온 프로필 데이터 ===`);
+    // console.log(profile);
+    // console.log('======================================================\n');
+    
     try {
         const providerId = profile.id; // 소셜 플랫폼에서 넘겨주는 고유 식별자
 
@@ -28,18 +33,18 @@ const verifySocialUser = async (provider, profile, done) => {
 
 // 1. 카카오 인증 전략
 passport.use(new KakaoStrategy({
-    clientID: process.env.KAKAO_CLIENT_ID || 'c47d6e94f8884098da4dd09662e902a3', // <-- 값이 없으면 임시 문자열 대체
-    clientSecret: process.env.KAKAO_CLIENT || 'WPMOZgo8ux9FI4s0fbpNuqHMw3bIHPrG', // <-- 값이 없으면 임시 문자열 대체
-    callbackURL: 'http://localhost:5000/api/auth/kakao/callback'
+    clientID: process.env.KAKAO_CLIENT_ID, // <-- 값이 없으면 임시 문자열 대체
+    clientSecret: process.env.KAKAO_CLIENT_SECRET, // <-- 값이 없으면 임시 문자열 대체
+    callbackURL: process.env.KAKAO_CALLBACK_URL
 }, (accessToken, refreshToken, profile, done) => {
     verifySocialUser('kakao', profile, done);
 }));
 
 // 2. 네이버 인증 전략
 passport.use(new NaverStrategy({
-    clientID: process.env.NAVER_CLIENT_ID || 'eRUnIQvr8s2L0SkCmojz',       // <-- 수정
-    clientSecret: process.env.NAVER_CLIENT_SECRET || 'fgoZaPxC_M', // <-- 수정
-    callbackURL: 'http://localhost:5000/api/auth/naver/callback'
+    clientID: process.env.NAVER_CLIENT_ID,
+    clientSecret: process.env.NAVER_CLIENT_SECRET,
+    callbackURL: process.env.NAVER_CALLBACK_URL
 }, (accessToken, refreshToken, profile, done) => {
     verifySocialUser('naver', profile, done);
 }));
